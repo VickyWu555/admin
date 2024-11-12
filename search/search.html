@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服機器人後台系統</title>
+    <link rel="stylesheet" href="../share.css">
+    <link rel="stylesheet" href="search.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let fileArray = [];
+        let urlArray = [];
+
+        // Function to list documents from API
+        function listDocuments() {
+            $.ajax({
+                url: 'http://localhost:8000/listdocuments',
+                type: 'POST',
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        data.forEach(doc => {
+                            Object.entries(doc).forEach(([fileName, fileId]) => {
+                                fileArray.push({ name: fileName, id: fileId });
+                            });
+                        });
+                        console.log(fileArray);
+                        generateTable('fileTable', fileArray, '檔案');
+                    } else {
+                        alert('無法獲取文件列表');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('獲取文件列表失敗');
+                }
+            });
+        }
+
+        // Function to list URLs from another API
+        function listUrls() {
+            $.ajax({
+                url: 'http://localhost:8000/listurls',
+                type: 'POST',
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        data.forEach(urlObj => {
+                            urlArray.push({
+                                url: urlObj.url,
+                                title: urlObj.title,
+                                id: urlObj.fileID
+                            });
+                        });
+                        generateTable('urlTable', urlArray, '網址');
+                    } else {
+                        alert('無法獲取網址列表');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('獲取網址列表失敗');
+                }
+            });
+        }
+
+        // Function to generate table rows dynamically with edit and delete buttons
+        function generateTable(tableId, dataArray, labeltext) {
+            const table = document.getElementById(tableId);
+            table.innerHTML = ''; // Clear table content
+            dataArray.forEach((item, index) => {
+                const row = document.createElement('tr');
+
+                // Label Cell
+                const labelCell = document.createElement('td');
+                labelCell.classList.add('label-column');
+                labelCell.textContent = `${labeltext} ${index + 1}：`;
+                row.appendChild(labelCell);
+
+                if(labeltext == "檔案"){
+                    //Text Cell
+                    const textCell = document.createElement('td');
+                    textCell.classList.add('text-column');
+                    textCell.textContent = item.name;
+                    row.appendChild(textCell);
+                }else if(labeltext == "網址"){
+                    // Title as Link Cell (URL Link)
+                    const textCell = document.createElement('td');
+                    textCell.classList.add('text-column');
+
+                    // Create anchor tag with URL link
+                    const link = document.createElement('a');
+                    link.href = item.url;
+                    link.textContent = item.title; // Display item.title as link text
+                    link.target = '_blank'; // Open the link in a new tab
+                    textCell.appendChild(link);
+                    row.appendChild(textCell);
+                }
+
+                // ID Cell (hidden)
+                const idCell = document.createElement('td');
+                idCell.classList.add('id-column');
+                idCell.textContent = item.id; // Set file ID
+                idCell.style.display = 'none'; // Hide this column
+
+                // Edit Button Cell
+                const editCell = document.createElement('td');
+                editCell.classList.add('action-column');
+                const editButton = createActionButton('編輯', '../images/edit.png', () => openEditModal(index, tableId, labeltext, item, item.id), '編輯');
+                editCell.appendChild(editButton);
+
+                // Delete Button Cell
+                const deleteCell = document.createElement('td');
+                deleteCell.classList.add('action-column');
+                const deleteButton = createActionButton('刪除', '../images/delete.png', () => openDeleteModal(index, tableId, labeltext, item, item.id), '刪除');
+                deleteCell.appendChild(deleteButton);
+
+                row.appendChild(idCell);
+                row.appendChild(editCell);
+                row.appendChild(deleteCell);
+
+                table.appendChild(row);
+            });
+        }
+
+
+        // Helper function to create action buttons
+        function createActionButton(altText, src, onClick, title) {
+            const button = document.createElement('img');
+            button.src = src;
+            button.alt = altText;
+            button.title = title; // 設置 title 屬性
+            button.style.cursor = 'pointer';
+            button.width = 20;
+            button.height = 20;
+            button.onclick = onClick;
+            return button;
+        }
+
+
+        function openEditModal(index, tableId, labeltext, item, itemId) {
+            const modal = document.getElementById('editModal');
+            const fileUploadSection = document.getElementById('fileUploadSection');
+            const urlInputSection = document.getElementById('urlInputSection');
+            const checkbox = document.getElementById('fileMembership');
+            const isMemberOnly = checkbox.checked;
+
+            if (tableId === 'fileTable') {
+                fileUploadSection.style.display = 'block';  
+                urlInputSection.style.display = 'none';     
+            } else {
+                fileUploadSection.style.display = 'none';   
+                urlInputSection.style.display = 'block';    
+            }
+
+            document.getElementById('editItemLabel').textContent = `編輯${labeltext} ${index + 1}`;
+            modal.style.display = 'block';
+
+            document.getElementById('confirmEdit').onclick = function() {
+                if (tableId === 'fileTable') {
+                    editItem(index, itemId, item.name, document.getElementById('fileUpload').files[0], tableId, labeltext, isMemberOnly);
+                } else {
+                    editUrl(index, itemId, document.getElementById('urlInput').value, tableId, labeltext, isMemberOnly);
+                }
+                
+                closeModal('editModal');
+            };
+        }
+
+        function editItem(index, fileId, fileName, newFile, tableId, labeltext, isMemberOnly) {
+            if (!newFile) {
+                alert('請選擇要上傳的檔案');
+                return;
+            }
+            console.log(fileId);
+            console.log(fileName);
+            console.log(newFile);
+
+            const formData = new FormData();
+            formData.append("fileId", fileId);  // Add fileId
+            formData.append("filename", fileName);  // Add fileName
+            formData.append("file", newFile);   // Add new file
+            formData.append('isMemberOnly', isMemberOnly); // 傳送會員限定狀態
+
+            $.ajax({
+                url: 'http://localhost:8000/updatefile',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert(`${labeltext}已更新`);
+                    // Update frontend display
+                    fileArray = [];
+                    listDocuments();
+                },
+                error: function(xhr, status, error) {
+                    alert(`編輯${labeltext}失敗`);
+                }
+            });
+        }
+
+        function editUrl(index, urlId, newUrl, tableId, labeltext, isMemberOnly) {
+            if (!newUrl) {
+                alert('請輸入網址');
+                return;
+            }
+            
+            const formData = {
+                urlId: urlId,
+                url: newUrl,
+                memberOnly: isMemberOnly
+            };
+
+            $.ajax({
+                url: 'http://localhost:8000/updateurl',
+                type: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function(response) {
+                    alert(`${labeltext}已更新`);
+                    urlArray = [];
+                    listUrls();
+                },
+                error: function(xhr, status, error) {
+                    alert(`編輯${labeltext}失敗`);
+                }
+            });
+        }
+
+        function openDeleteModal(index, tableId, labeltext, item, itemId) {
+            const modal = document.getElementById('deleteModal');
+            document.getElementById('deleteItemLabel').textContent = `確認刪除${labeltext} ${index + 1}`;
+            
+            document.getElementById('confirmDelete').onclick = function() {
+                if (tableId === 'fileTable') {
+                    deleteItem(index, item.name, tableId, labeltext, itemId);
+                } else {
+                    deleteUrl(index, item.url, tableId, labeltext, itemId);
+                }
+                closeModal('deleteModal');
+            };
+            
+            modal.style.display = 'block';
+        }
+
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function deleteItem(index, itemName, tableId, labeltext, itemId) {
+            $.ajax({
+                url: 'http://localhost:8000/delbyfileID',
+                type: 'POST',
+                data: JSON.stringify({ fileId: itemId, filename: itemName }),  
+                contentType: 'application/json', 
+                success: function(response) {
+                    alert(`${labeltext}已刪除`);
+                    // Remove item from the frontend array
+                    if (tableId === 'fileTable') {
+                        fileArray.splice(index, 1);
+                    } else {
+                        urlArray.splice(index, 1);
+                    }
+                    generateTable(tableId, tableId === 'fileTable' ? fileArray : urlArray, labeltext);
+                },
+                error: function(xhr, status, error) {
+                    alert(`刪除${labeltext}失敗`);
+                }
+            });
+        }
+
+        function deleteUrl(index, itemUrl, tableId, labeltext, itemId) {
+            console.log(itemId);
+            console.log(itemUrl);
+            $.ajax({
+                url: 'http://localhost:8000/delbyurlID',
+                type: 'POST',
+                data: JSON.stringify({ url: itemUrl, urlId: itemId }),  
+                contentType: 'application/json',
+                success: function(response) {
+                    alert(`${labeltext}已刪除`);
+                    urlArray.splice(index, 1); // Remove from the array
+                    generateTable(tableId, urlArray, labeltext);
+                },
+                error: function(xhr, status, error) {
+                    alert(`刪除${labeltext}失敗`);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            listDocuments(); 
+            listUrls(); 
+        });
+    </script>
+</head>
+<body style="background-color:#D9E4F3">
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="../upload/upload.html">上傳資料</a></li>
+                <li><a href="search.html">搜尋資料</a></li>
+                <li><a href="../login/login.php">登出</a></li>
+            </ul>
+        </aside>
+        
+        <div class="main-container">
+            <nav class="navbar">
+                <div class="navbar-logo"><a href="../homepage/homepage.html">客服機器人後台系統</a></div>
+            </nav>
+            
+            <main class="main-content">
+                <div class="rectangle-container">
+                    <div class="rounded-rectangle">
+                        <div class="inner-rectangle">
+                            <div class="inner-text">目前文件檔</div>
+                        </div>
+                        <div class="overlay-content">
+                            <div class="table-container">
+                                <table id="fileTable"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-rectangle">
+                        <div class="inner-rectangle">
+                            <div class="inner-text">目前網址</div>
+                        </div>
+                        <div class="overlay-content">
+                            <div class="table-container">
+                                <table id="urlTable"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+            <h2 id="editItemLabel"></h2>
+            <div id="fileUploadSection" style="display:none;">
+                <label for="fileUpload">上傳檔案:</label>
+                <input type="file" id="fileUpload">
+                <input type="checkbox" id="fileMembership" style="margin-top: 10px;"> <label for="fileMembership">會員限定</label><br>
+            </div>
+            <div id="urlInputSection" style="display:none;">
+                <label for="urlInput">網址:</label>
+                <input type="text" id="urlInput">
+                <input type="checkbox" id="fileMembership" style="margin-top: 10px;"> <label for="fileMembership">會員限定</label><br>
+            </div>
+            <br>
+            <button id="confirmEdit">確認編輯</button>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+            <h2 id="deleteItemLabel"></h2>
+            <button id="confirmDelete">確認刪除</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服機器人後台系統</title>
+    <link rel="stylesheet" href="../share.css">
+    <link rel="stylesheet" href="upload.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body style="background-color:#D9E4F3">
+    <div class="container">
+        <!-- Sidebar Menu -->
+        <aside class="sidebar">
+            <ul>
+                <li><a href="upload.html">上傳資料</a></li>
+                <li><a href="../search/search.html">搜尋資料</a></li>
+                <li><a href="../login/login.php">登出</a></li>
+            </ul>
+        </aside>
+        
+        <div class="main-container">
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <div class="navbar-logo"><a href="../homepage/homepage.html">客服機器人後台系統</a></div>
+            </nav>
+            
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="rectangle-container">
+                    <div class="rounded-rectangle">
+                        <div class="inner-rectangle">
+                            <div class="inner-text">上傳文件檔</div>
+                        </div>
+                        <div class="overlay-content">
+                            <img src="../images/upload.png" alt="上傳" title="點擊上傳檔案" class="overlay-image" id="uploadImage">
+                            <p id="fileName">未選擇檔案</p>
+                            <input type="checkbox" id="fileMembership" style="margin-top: 10px;"> <label for="fileMembership">會員限定</label><br>
+                            <button class="overlay-button" onclick="confirmUpload()">確認上傳</button>
+                            <!-- 隱藏的文件輸入框 -->
+                            <input type="file" id="fileInput" style="display:none">
+                        </div>
+                    </div>
+                    <div class="rounded-rectangle">
+                        <div class="inner-rectangle">
+                            <div class="inner-text">上傳網址</div>
+                        </div>
+                        <div class="overlay-content">
+                            <p style="margin-top: 20px; margin-bottom: 30px;">請在下方表格填入hackmd網址</p>
+                            <table id="urlTable">
+                                <tr>
+                                    <td>編號</td>
+                                    <td>網址</td>
+                                    <td>會員<br>限定</td>
+                                </tr>
+                                <tr>
+                                    <td>網址 1：</td>
+                                    <td><input type="text" class="urlInput" placeholder="請輸入網址"></td>
+                                    <td><input type="checkbox" class="memberCheckbox"></td>
+                                </tr>
+                                <tr>
+                                    <td>網址 2：</td>
+                                    <td><input type="text" class="urlInput" placeholder="請輸入網址"></td>
+                                    <td><input type="checkbox" class="memberCheckbox"></td>
+                                </tr>
+                                <tr>
+                                    <td>網址 3：</td>
+                                    <td><input type="text" class="urlInput" placeholder="請輸入網址"></td>
+                                    <td><input type="checkbox" class="memberCheckbox"></td>
+                                </tr>
+                                <tr>
+                                    <td>網址 4：</td>
+                                    <td><input type="text" class="urlInput" placeholder="請輸入網址"></td>
+                                    <td><input type="checkbox" class="memberCheckbox"></td>
+                                </tr>
+                                <tr>
+                                    <td>網址 5：</td>
+                                    <td><input type="text" class="urlInput" placeholder="請輸入網址"></td>
+                                    <td><input type="checkbox" class="memberCheckbox"></td>
+                                </tr>
+                            </table>
+                            <button class="overlay-button" onclick="confirmUrlUpload()" style="margin-top: 50px;">確認上傳</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 點擊圖片觸發文件選擇
+        document.getElementById('uploadImage').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+
+        // 當文件選擇完成時，將檔名顯示出來
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = '檔名：' + file.name;
+            } else {
+                document.getElementById('fileName').textContent = '未選擇檔案';
+            }
+        });
+
+        function confirmUpload() {
+            const fileInput = $('#fileInput')[0]; // 使用 jQuery 選擇器
+            const isMemberOnly = $('#fileMembership').is(':checked'); // 會員限定
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('isMemberOnly', isMemberOnly); // 傳送會員限定狀態
+
+                $.ajax({
+                    url: 'http://localhost:8000/uploadfile', // API
+                    type: 'POST', 
+                    data: formData, 
+                    contentType: false, 
+                    processData: false, 
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            alert('文件 "' + data.filename + '" 已成功上傳');
+                            document.getElementById('fileName').textContent = '未上傳檔案';
+                            document.getElementById('fileMembership').checked = false;
+                        } else {
+                            alert('上傳失敗: ' + data.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('上傳失敗: 伺服器錯誤');
+                    }
+                });
+            } else {
+                alert('請先選擇一個檔案');
+            }
+        }
+
+        // 處理確認上傳網址的邏輯
+        function confirmUrlUpload() {
+            const urlInputs = document.querySelectorAll('.urlInput');
+            const checkboxes = document.querySelectorAll('.memberCheckbox');
+            const urlPattern = /^https:\/\/hackmd.io/;
+            let hasError = false;
+
+            urlInputs.forEach((input, index) => {
+                if (input.value) {
+                    if (urlPattern.test(input.value)) {
+                        const formData = new FormData();  // 每個網址創建新的 FormData
+                        const isMemberOnly = checkboxes[index].checked; // 確認該網址是否為會員限定
+
+                        formData.append('urls', input.value);  // 將網址加入 formData
+                        formData.append('isMemberOnly', isMemberOnly); // 傳送會員限定狀態
+
+                        // 發送 AJAX 請求
+                        $.ajax({
+                            url: 'http://localhost:8000/uploadhackmd', // API URL
+                            type: 'POST',
+                            processData: false,  // 防止 jQuery 將資料自動轉換為 query 字符串
+                            contentType: false,  // 使用 FormData 時需要設置為 false
+                            data: formData,      // 傳遞 FormData
+                            success: function(data) {
+                                if (data.message === 'success') {
+                                    alert('網址已成功上傳：' + input.value);
+                                    // 清空對應的輸入框和取消勾選
+                                    input.value = '';  // 清空輸入框
+                                    checkboxes[index].checked = false; // 取消勾選
+                                } else {
+                                    alert('網址上傳失敗：' + input.value);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error 上傳網址: ' + input.value, error);
+                            }
+                        });
+                    } else {
+                        alert('網址格式錯誤，請輸入正確的 hackmd 網址：' + input.value);
+                        hasError = true; // 記錄有錯誤
+                    }
+                }
+            });
+
+            if (!hasError && urlInputs.length > 0) {
+                alert('所有網址已開始上傳');
+            } else if (!hasError) {
+                alert('請至少輸入一個網址');
+            }
+        }
+    </script>
+</body>
+</html>

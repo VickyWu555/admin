@@ -1,0 +1,117 @@
+.main-content {
+    padding: 20px;
+}
+
+.rectangle-container {
+    margin-top: 30px;
+    margin-left: 160px;
+    display: flex;
+    gap: 120px; /* Optional: Adds space between the rectangles */
+}
+
+.rounded-rectangle {
+    width: 300px; /* Adjust as needed */
+    height: 400px; /* Adjust as needed */
+    background-color: #F5F5F5; /* Adjust as needed */
+    border-radius: 10px; /* Adjust as needed */
+    position: relative; /* Important for overlay positioning */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow for better appearance */
+}
+
+.inner-rectangle {
+    position: absolute;
+    top: -30px; /* Adjust as needed */
+    left: 70px; /* Adjust as needed */
+    width: 160px; /* Adjust as needed */
+    height: 60px; /* Adjust as needed */
+    background-color: #CFCFCF; /* Adjust as needed */
+    border-radius: 5px; /* Adjust as needed */
+}
+
+.inner-text {
+    margin: 15px;
+    font-size: 20px; /* Adjust as needed */
+    font-weight: bold;
+    color: #333; /* Adjust as needed */
+    text-align: center;
+}
+
+.overlay-image {
+    cursor: pointer;
+    margin-top: 50px;
+    margin-left: 10px;
+    width: 200px; /* Adjust as needed */
+    height: 200px; /* Adjust as needed */
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #333; /* Adjust as needed */
+}
+
+.overlay-content p {
+    margin: 0;
+    padding: 0;
+    font-size: 18px; /* Adjust as needed */
+}
+
+.overlay-button {
+    margin-top: 40px;
+    padding: 10px 20px;
+    background-color: #CFCFCF; /* Adjust as needed */
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.overlay-button:hover {
+    background-color: #CFCFCF; /* Adjust as needed */
+}
+
+/* 表格樣式，寬度占父容器的 80% */
+table {
+    width: 250px;
+    border-collapse: collapse;
+    margin: 0 auto; /* 表格居中 */
+}
+
+/* 設定每一列的寬度比例 */
+td:first-child {
+    width: 35%; 
+    border-right: 1px solid #000; /* 第一列和第二列之間的框線 */
+}
+
+td:last-child {
+    width: 15%; 
+}
+
+/* 奇偶行的背景顏色 */
+tr:nth-child(odd) {
+    background-color: #D9D9D9;
+}
+tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* 輸入框樣式，最大寬度 400px */
+input.urlInput {
+    width: 90%;
+    max-width: 300px;
+    padding: 8px;
+    margin-left: 0px;
+    box-sizing: border-box;
+    border: none; /* 去掉邊框 */
+}
+
+/* 設定奇數行和偶數行的輸入框背景顏色 */
+tr:nth-child(odd) .urlInput {
+    background-color: #D9D9D9; /* 與奇數行背景顏色一致 */
+}
+tr:nth-child(even) .urlInput {
+    background-color: #ffffff; /* 與偶數行背景顏色一致 */
+}

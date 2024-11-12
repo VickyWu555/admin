@@ -1,0 +1,52 @@
+.main-content {
+    padding: 20px;
+}
+
+.rectangle-container {
+    margin-top: 30px;
+    margin-left: 140px;
+    display: flex;
+    gap: 120px; /* Optional: Adds space between the rectangles */
+}
+
+.rounded-rectangle {
+    width: 800px; /* Adjust as needed */
+    height: 400px; /* Adjust as needed */
+    background-color: #F5F5F5; /* Adjust as needed */
+    border-radius: 10px; /* Adjust as needed */
+    position: relative; /* Important for overlay positioning */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow for better appearance */
+}
+
+.inner-rectangle {
+    position: absolute;
+    top: -30px; /* Adjust as needed */
+    left: 320px; /* Adjust as needed */
+    width: 160px; /* Adjust as needed */
+    height: 60px; /* Adjust as needed */
+    background-color: #CFCFCF; /* Adjust as needed */
+    border-radius: 5px; /* Adjust as needed */
+}
+
+.inner-text {
+    margin: 15px;
+    font-size: 20px; /* Adjust as needed */
+    font-weight: bold;
+    color: #333; /* Adjust as needed */
+    text-align: center;
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333; 
+    width: 700px;
+}
+
+.overlay-content p {
+    margin: 0;
+    padding: 0;
+    font-size: 20px; /* Adjust as needed */
+}

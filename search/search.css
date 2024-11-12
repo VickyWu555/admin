@@ -1,0 +1,230 @@
+.main-content {
+    padding: 20px;
+}
+
+.rectangle-container {
+    margin-top: 30px;
+    margin-left: 60px;
+    display: flex;
+    gap: 120px; /* Optional: Adds space between the rectangles */
+}
+
+.rounded-rectangle {
+    width: 400px; /* Adjust as needed */
+    height: 400px; /* Adjust as needed */
+    background-color: #F5F5F5; /* Adjust as needed */
+    border-radius: 10px; /* Adjust as needed */
+    position: relative; /* Important for overlay positioning */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow for better appearance */
+}
+
+.inner-rectangle {
+    position: absolute;
+    top: -30px; /* Adjust as needed */
+    left: 120px; /* Adjust as needed */
+    width: 160px; /* Adjust as needed */
+    height: 60px; /* Adjust as needed */
+    background-color: #CFCFCF; /* Adjust as needed */
+    border-radius: 5px; /* Adjust as needed */
+}
+
+.inner-text {
+    margin: 15px;
+    font-size: 20px; /* Adjust as needed */
+    font-weight: bold;
+    color: #333; /* Adjust as needed */
+    text-align: center;
+}
+
+.overlay-image {
+    cursor: pointer;
+    margin-top: 50px;
+    margin-left: 10px;
+    width: 200px; /* Adjust as needed */
+    height: 200px; /* Adjust as needed */
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #333; /* Adjust as needed */
+}
+
+.overlay-content p {
+    margin: 0;
+    padding: 0;
+    font-size: 18px; /* Adjust as needed */
+}
+
+.overlay-button {
+    margin-top: 40px;
+    padding: 10px 20px;
+    background-color: #CFCFCF; /* Adjust as needed */
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.overlay-button:hover {
+    background-color: #CFCFCF; /* Adjust as needed */
+}
+
+.table-container::-webkit-scrollbar {
+    width: 2px; /* 滾動條的寬度 */
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* 滾動條的背景色 */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888; /* 滾動條的滑塊顏色 */
+    border-radius: 10px; /* 讓滑塊圓角化 */
+}
+
+.table-container {
+    width: 350px; /* 可以調整寬度 */
+    height: 350px; /* 固定高度 */
+    overflow-y: auto; /* 只允許垂直滾動 */
+    margin-top: 40px;
+}
+
+/* 表格樣式*/
+table {
+    width: 350px;
+    border-collapse: collapse;
+    margin: 0px auto; /* 表格居中 */
+    table-layout: fixed;
+}
+
+td {
+    border: 1px solid #ccc; 
+    padding: 4px; /* 表格內的內距 */
+    word-wrap: break-word; /* 讓字串換行 */
+    white-space: normal; /* 允許文字在表格內自動換行 */
+}
+
+/* 調整每一列的寬度 */
+.label-column {
+    width: 20%; 
+}
+.text-column {
+    width: 50%; 
+    text-align: left; 
+}
+.action-column {
+    width: 10%; 
+}
+
+/* 奇偶行的背景顏色 */
+tr:nth-child(odd) {
+    background-color: #D9D9D9;
+}
+tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* 輸入框樣式，最大寬度 400px */
+input.urlInput {
+    width: 90%;
+    max-width: 300px;
+    padding: 8px;
+    margin-left: 0px;
+    box-sizing: border-box;
+    border: none; /* 去掉邊框 */
+}
+
+/* 設定奇數行和偶數行的輸入框背景顏色 */
+tr:nth-child(odd) .urlInput {
+    background-color: #D9D9D9; /* 與奇數行背景顏色一致 */
+}
+tr:nth-child(even) .urlInput {
+    background-color: #ffffff; /* 與偶數行背景顏色一致 */
+}
+
+/*.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    width: 500px;
+    height: 300px;
+    background-color: rgba(0,0,0,0.4); /* 模態背景遮罩 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}*/
+/* 背景模糊效果 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);  /* 背景半透明 */
+}
+
+/* Modal內容的樣式 */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    margin-top: 150px;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px; /* 限制最大寬度 */
+    text-align: center;  /* 文字置中 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 150px; /* 可以根據需要調整 */
+}
+
+.modal-content h2{
+    margin-top: 0px; /* 或者使用 padding-top */
+}
+
+/* 關閉按鈕 */
+.close {
+    color: #aaa;
+    align-self: flex-end;  /* 關閉按鈕對齊右側 */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
