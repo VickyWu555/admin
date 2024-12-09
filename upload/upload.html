@@ -114,7 +114,8 @@
                 formData.append('isMemberOnly', isMemberOnly); // 傳送會員限定狀態
 
                 $.ajax({
-                    url: 'http://localhost:8000/uploadfile', // API
+                    url: 'http://18.141.220.13:8000/uploadfile', // API
+                    //url: 'http://127.0.0.1:8000/uploadfile',
                     type: 'POST', 
                     data: formData, 
                     contentType: false, 
@@ -156,7 +157,8 @@
 
                         // 發送 AJAX 請求
                         $.ajax({
-                            url: 'http://localhost:8000/uploadhackmd', // API URL
+                            url: 'http://18.141.220.13:8000/uploadhackmd', // API URL
+                            //url: 'http://localhost:8000/uploadhackmd',
                             type: 'POST',
                             processData: false,  // 防止 jQuery 將資料自動轉換為 query 字符串
                             contentType: false,  // 使用 FormData 時需要設置為 false

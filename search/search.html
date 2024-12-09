@@ -14,7 +14,8 @@
         // Function to list documents from API
         function listDocuments() {
             $.ajax({
-                url: 'http://localhost:8000/listdocuments',
+                url: 'http://18.141.220.13:8000/listdocuments',
+                //url: 'http://localhost:8000/listdocuments',
                 type: 'POST',
                 success: function(data) {
                     if (Array.isArray(data)) {
@@ -39,7 +40,8 @@
         // Function to list URLs from another API
         function listUrls() {
             $.ajax({
-                url: 'http://localhost:8000/listurls',
+                url: 'http://18.141.220.13:8000/listurls',
+                //url: 'http://localhost:8000/listurls',
                 type: 'POST',
                 success: function(data) {
                     if (Array.isArray(data)) {
@@ -181,7 +183,8 @@
             formData.append('isMemberOnly', isMemberOnly); // 傳送會員限定狀態
 
             $.ajax({
-                url: 'http://localhost:8000/updatefile',
+                url: 'http://18.141.220.13:8000/updatefile',
+                //url: 'http://localhost:8000/updatefile',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -204,17 +207,18 @@
                 return;
             }
             
-            const formData = {
-                urlId: urlId,
-                url: newUrl,
-                memberOnly: isMemberOnly
-            };
+            const formData = new FormData();
+            formData.append("urlId", urlId);  
+            formData.append("url", newUrl);  
+            formData.append('isMemberOnly', isMemberOnly); 
 
             $.ajax({
-                url: 'http://localhost:8000/updateurl',
+                url: 'http://18.141.220.13:8000/updateurl',
+                //url: 'http://localhost:8000/updateurl',
                 type: 'POST',
-                data: JSON.stringify(formData),
-                contentType: 'application/json',
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     alert(`${labeltext}已更新`);
                     urlArray = [];
@@ -249,7 +253,8 @@
 
         function deleteItem(index, itemName, tableId, labeltext, itemId) {
             $.ajax({
-                url: 'http://localhost:8000/delbyfileID',
+                url: 'http://18.141.220.13:8000/delbyfileID',
+                //url: 'http://localhost:8000/delbyfileID',
                 type: 'POST',
                 data: JSON.stringify({ fileId: itemId, filename: itemName }),  
                 contentType: 'application/json', 
@@ -273,7 +278,8 @@
             console.log(itemId);
             console.log(itemUrl);
             $.ajax({
-                url: 'http://localhost:8000/delbyurlID',
+                url: 'http://18.141.220.13:8000/delbyurlID',
+                //url: 'http://localhost:8000/delbyurlID',
                 type: 'POST',
                 data: JSON.stringify({ url: itemUrl, urlId: itemId }),  
                 contentType: 'application/json',
